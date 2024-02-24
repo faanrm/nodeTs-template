@@ -36,7 +36,22 @@ export const registerUser = async (req: express.Request, res: express.Response) 
         })
         return res.status(200).json(user).end()
     } catch (error) {
-        console.log(error);
+        console.log(error); 5
         return res.sendStatus(400);
+    }
+}
+
+export const deleteUser = async (req: express.Request, res: express.Response) => {
+
+    try {
+        const { id } = req.params
+        const deletedUser = deleteUserById(id)
+        if(!deleteUser){
+            return  res.status(404).json({message : "no user found"})
+        }
+        return res.status(200).json({data  : deleteUser , message : "User deleted"})
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error.message)
     }
 }
