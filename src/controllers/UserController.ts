@@ -1,5 +1,5 @@
 import express from "express";
-import { deleteUserById, getUserByEmail, getUserById, getUsers, createUser } from "../models/UserModels";
+import { deleteUserById, getUserByEmail, getUserById, getUsers, createUser, updateUserById } from "../models/UserModels";
 import { random, authentification } from "../helpers/index";
 
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
@@ -46,12 +46,33 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
     try {
         const { id } = req.params
         const deletedUser = deleteUserById(id)
-        if(!deleteUser){
-            return  res.status(404).json({message : "no user found"})
+        if (!deleteUser) {
+            return res.status(404).json({ message: "no user found" })
         }
-        return res.status(200).json({data  : deleteUser , message : "User deleted"})
+        return res.status(200).json({ data: deleteUser, message: "User deleted" })
     } catch (error) {
         console.log(error);
         return res.status(500).json(error.message)
+    }
+}
+
+export const updateUser = async (req: express.Request, res: express.Response) => {
+    try {
+        const { id } = req.params;
+        const { username } = req.body;
+
+        if (!username) {
+            return res.sendStatus(400).json({ message: "error no username" });
+        }
+
+        const user = await getUserById(id);
+
+        user.username = username;
+        await user.save();
+
+        return res.status(200).json({data : user, message : "user updated"}).end();
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
     }
 }
